@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Todo</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      #items {
+        border: 1px solid #ddd;
+        border-bottom-width: 0;
+        list-style: none;
+        margin: 0 0 5px;
+        max-width: 400px;
+        padding: 0;
+      }
+
+      #items:before {
+        background-color: #f0f0f0;
+        border-bottom: 1px solid #ddd;
+        content: "Tasks";
+        display: block;
+        padding: 5px;
+      }
+
+      #items li {
+        border-bottom: 1px solid #ddd;
+        padding: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <ul id="items"></ul>
+    <form id="form">
+      <input id="new-todo" type="text" autofocus="autofocus">
+      <button type="submit">Add item</button>
+    </form>
+    <script>
+      function xhr(method, url, data, callback) {
+        var req = new XMLHttpRequest();
+        req.onreadystatechange = function() {
+          if (req.readyState == 4 && req.status === 200 && callback) {
+            callback(JSON.parse(req.responseText));
+          }
+        };
+        req.open(method, url, true);
+        req.send(data);
+      }
+
+      function addItemElement(id, title) {
+        var item = document.createElement('li');
+        item.setAttribute('id', 'item-' + id);
+        var checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = false;
+        checkbox.onchange = function() {
+          if (this.checked) {
+            removeItem(id);
+          }
+        };
+        item.appendChild(checkbox);
+        item.appendChild(document.createTextNode(' ' + title));
+        document.getElementById('items').appendChild(item);
+      }
+
+      function removeItem(id) {
+        xhr('DELETE', '/items/' + id);
+        removeItemElement(id);
+      }
+
+      function removeItemElement(id) {
+        var item = document.getElementById('item-' + id);
+        item.parentNode.removeChild(item);
+      }
+
+      document.getElementById('form').onsubmit = function(event) {
+        var input = event.target.elements['new-todo'];
+        var value = input.value;
+        xhr('POST', '/items', value, function(data) {
+          addItemElement(data, value);
+        });
+        input.value = '';
+        return false;
+      };
+
+      xhr('GET', '/items', null, function(data) {
+        for (var key in data) {
+          addItemElement(key, data[key]);
+        }
+      });
+    </script>
+  </body>
+</html>

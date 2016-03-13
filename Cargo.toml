@@ -1,0 +1,15 @@
+[package]
+name = "iron-todo"
+version = "0.1.0"
+authors = ["Skyler Lipthay <skyler.lipthay@gmail.com>"]
+description = "A single page application driven by Iron."
+readme = "README.md"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/SkylerLipthay/iron-todo"
+
+[dependencies]
+iron = "0.2"
+router = "0.1"
+serde = "0.7"
+serde_json = "0.7"
+time = "0.1"
